@@ -1,0 +1,36 @@
+name: Build Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: دریافت کد پروژه
+        uses: actions/checkout@v6
+
+      - name: نصب Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+          cache: gradle
+
+      - name: دسترسی اجرای Gradle
+        run: chmod +x gradlew
+
+      - name: ساخت APK آزمایشی
+        run: ./gradlew assembleDebug --stacktrace
+
+      - name: آپلود فایل APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: IELTS-Leitner-debug-apk
+          path: app/build/outputs/apk/debug/*.apk
+          if-no-files-found: error
+          retention-days: 30
